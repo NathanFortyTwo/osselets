@@ -1,0 +1,28 @@
+{%load static%}
+
+Hello world !
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href={%static "game.css"%}>
+    <title>3x3 Image Grids</title>
+</head>
+<body>
+    <div class="image-grid">
+        <!-- 1st 3x3 grid -->
+        {%for image_path in images1%}
+        <img src="{% static 'de/'|add:image_path %}">
+        {%endfor%}
+    </div>
+    
+    <div class="image-grid">
+        {%for image_path in images2%}
+        <img src="{% static 'de/'|add:image_path %}">
+        {%endfor%}
+     
+    </div>
+</body>
+</html>
