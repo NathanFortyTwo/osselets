@@ -13,7 +13,7 @@ class OsseletsEnv(gym.Env):
         super(OsseletsEnv, self).__init__()
 
         self.action_space = spaces.Discrete(3)
-        self.observation_space = spaces.Box(low=-1, high=1, shape=(3,6), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=-1, high=1, shape=(3,7), dtype=np.uint8)
 
         self.reset()
 
@@ -21,12 +21,7 @@ class OsseletsEnv(gym.Env):
         #TODO ADD DICE VALUE TO STATE
 
         self.game = Osselets()
-        board1 = np.array(self.game.players[0].board)
-        board2 = np.array(self.game.players[1].board)
-        
-        self.state = np.concatenate((board1,board2),axis=1)
-
-        self.game.players[0].roll_dice()
+        self.state = self.game.getstate()
         return self.state
 
     def step(self, action):
@@ -38,16 +33,18 @@ class OsseletsEnv(gym.Env):
         if player1_action not in valid_actions:
             reward = -500
             done = True
+            self.state = self.game.getstate()
+
             return self.state, reward, done, {}
         
         self.game.players[0].place_dice(player1_action)
 
-        self.game.players[1].roll_dice()
+        dice1 = self.game.players[1].roll_dice()
         valid_actions = self.game.players[1].get_valid_rows()
         random_action = random.choice(valid_actions)
         self.game.players[1].place_dice(random_action)
         
-        self.game.players[0].roll_dice()        
+        dice0 = self.game.players[0].roll_dice()        
 
         score0 = self.game.players[0].get_score()
         score1 = self.game.players[1].get_score()
@@ -56,7 +53,9 @@ class OsseletsEnv(gym.Env):
         # Check for terminal conditions
         if self.game.is_done():
             done = True
-
+            if score0 > score1:
+                reward = 150
+        self.state = self.game.getstate()
         return self.state, reward, done, {}
 
     def render(self, mode='human'):
@@ -69,7 +68,7 @@ class OsseletsEnv(gym.Env):
 def main():
     env = OsseletsEnv()
     c=0
-    for _ in range(10):
+    for _ in range(1):
         env.reset()
         done = False
         global_reward = 0

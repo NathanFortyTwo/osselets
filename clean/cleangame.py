@@ -1,7 +1,7 @@
 import random as rd
-from numpy import transpose,array
+from numpy import transpose,array,concatenate
 from IPython.display import clear_output
-
+from colors import colors
 
 
 def get_score_row(row):
@@ -75,4 +75,13 @@ class Osselets():
             for row in board:
                 print(row)
             print("")
+
+    def getstate(self):
+        dice0 = self.players[0].dice
+        dice1 = self.players[1].dice
+        board0 = self.players[0].board
+        board1 = self.players[1].board
+        state = concatenate((board0,board1),axis=1)
+        return concatenate((state,array([dice0,0,dice1]).reshape((3,1))),axis=1)
+        
 
